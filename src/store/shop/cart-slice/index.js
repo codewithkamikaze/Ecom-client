@@ -8,59 +8,58 @@ const initialState = {
   isLoading: false,
 };
 
+// 🌍 Base API من .env
+const API = `${import.meta.env.VITE_API_URL}/api/shop/cart`;
+
+//////////////////////////////
 // ADD TO CART
+//////////////////////////////
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ userId, productId, quantity }) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/cart/add",
-      {
-        userId,
-        productId,
-        quantity,
-      },
-    );
+    const response = await axios.post(`${API}/add`, {
+      userId,
+      productId,
+      quantity,
+    });
 
     return response.data;
   },
 );
 
+//////////////////////////////
 // FETCH CART
+//////////////////////////////
 export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
   async (userId) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/cart/get/${userId}`,
-    );
-
+    const response = await axios.get(`${API}/get/${userId}`);
     return response.data;
   },
 );
 
+//////////////////////////////
 // DELETE ITEM
+//////////////////////////////
 export const deleteCartItem = createAsyncThunk(
   "cart/deleteCartItem",
   async ({ userId, productId }) => {
-    const response = await axios.delete(
-      `http://localhost:5000/api/shop/cart/${userId}/${productId}`,
-    );
-
+    const response = await axios.delete(`${API}/${userId}/${productId}`);
     return response.data;
   },
 );
 
+//////////////////////////////
 // UPDATE QTY
+//////////////////////////////
 export const updateCartQuantity = createAsyncThunk(
   "cart/updateCartQuantity",
   async ({ userId, productId, quantity }) => {
-    const response = await axios.put(
-      "http://localhost:5000/api/shop/cart/update-cart",
-      {
-        userId,
-        productId,
-        quantity,
-      },
-    );
+    const response = await axios.put(`${API}/update-cart`, {
+      userId,
+      productId,
+      quantity,
+    });
 
     return response.data;
   },
@@ -72,6 +71,7 @@ const shoppingCartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+
       // ADD
       .addCase(addToCart.pending, (state) => {
         state.isLoading = true;

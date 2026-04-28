@@ -9,52 +9,53 @@ const initialState = {
   orderDetails: null,
 };
 
+// 🌍 Base API من .env
+const API = `${import.meta.env.VITE_API_URL}/api/shop/order`;
+
+//////////////////////////////
 // CREATE ORDER
+//////////////////////////////
 export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
   async (orderData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
-      orderData,
-    );
+    const response = await axios.post(`${API}/create`, orderData);
     return response.data;
   },
 );
 
+//////////////////////////////
 // CAPTURE PAYMENT
+//////////////////////////////
 export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ paymentId, payerId, orderId }) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/capture",
-      {
-        paymentId,
-        payerId,
-        orderId,
-      },
-    );
+    const response = await axios.post(`${API}/capture`, {
+      paymentId,
+      payerId,
+      orderId,
+    });
     return response.data;
   },
 );
 
-// GET ORDERS
+//////////////////////////////
+// GET ORDERS BY USER
+//////////////////////////////
 export const getAllOrdersByUserId = createAsyncThunk(
   "/order/getAllOrdersByUserId",
   async (userId) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/list/${userId}`,
-    );
+    const response = await axios.get(`${API}/list/${userId}`);
     return response.data;
   },
 );
 
+//////////////////////////////
 // ORDER DETAILS
+//////////////////////////////
 export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/order/details/${id}`,
-    );
+    const response = await axios.get(`${API}/details/${id}`);
     return response.data;
   },
 );
@@ -73,6 +74,7 @@ const shoppingOrderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       // CREATE ORDER
       .addCase(createNewOrder.pending, (state) => {
         state.isLoading = true;
@@ -93,7 +95,7 @@ const shoppingOrderSlice = createSlice({
         state.orderId = null;
       })
 
-      // CAPTURE PAYMENT (كان ناقص)
+      // CAPTURE PAYMENT
       .addCase(capturePayment.pending, (state) => {
         state.isLoading = true;
       })

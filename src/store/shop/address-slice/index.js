@@ -6,44 +6,52 @@ const initialState = {
   addressList: [],
 };
 
+// 🌍 Base API من .env
+const API = `${import.meta.env.VITE_API_URL}/api/shop/address`;
+
+//////////////////////////////
+// ADD ADDRESS
+//////////////////////////////
 export const addNewAddress = createAsyncThunk(
   "/addresses/addNewAddress",
   async (formData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/address/add",
-      formData,
-    );
+    const response = await axios.post(`${API}/add`, formData);
     return response.data;
   },
 );
 
+//////////////////////////////
+// GET ALL ADDRESSES
+//////////////////////////////
 export const fetchAllAddresses = createAsyncThunk(
   "/addresses/fetchAllAddresses",
   async (userId) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/shop/address/get/${userId}`,
-    );
+    const response = await axios.get(`${API}/get/${userId}`);
     return response.data;
   },
 );
 
+//////////////////////////////
+// EDIT ADDRESS
+//////////////////////////////
 export const editAddress = createAsyncThunk(
   "/addresses/editAddress",
   async ({ userId, addressId, formData }) => {
     const response = await axios.put(
-      `http://localhost:5000/api/shop/address/update/${userId}/${addressId}`,
+      `${API}/update/${userId}/${addressId}`,
       formData,
     );
     return response.data;
   },
 );
 
+//////////////////////////////
+// DELETE ADDRESS
+//////////////////////////////
 export const deleteAddress = createAsyncThunk(
   "/addresses/deleteAddress",
   async ({ userId, addressId }) => {
-    const response = await axios.delete(
-      `http://localhost:5000/api/shop/address/delete/${userId}/${addressId}`,
-    );
+    const response = await axios.delete(`${API}/delete/${userId}/${addressId}`);
     return response.data;
   },
 );
@@ -54,7 +62,8 @@ const addressSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // ADD ADDRESS
+
+      // ADD
       .addCase(addNewAddress.pending, (state) => {
         state.isLoading = true;
       })
@@ -65,7 +74,7 @@ const addressSlice = createSlice({
         state.isLoading = false;
       })
 
-      // FETCH ADDRESSES
+      // GET
       .addCase(fetchAllAddresses.pending, (state) => {
         state.isLoading = true;
       })
@@ -78,7 +87,7 @@ const addressSlice = createSlice({
         state.addressList = [];
       })
 
-      // EDIT ADDRESS (ناقص عندك)
+      // EDIT
       .addCase(editAddress.pending, (state) => {
         state.isLoading = true;
       })
@@ -89,7 +98,7 @@ const addressSlice = createSlice({
         state.isLoading = false;
       })
 
-      // DELETE ADDRESS (ناقص عندك)
+      // DELETE
       .addCase(deleteAddress.pending, (state) => {
         state.isLoading = true;
       })

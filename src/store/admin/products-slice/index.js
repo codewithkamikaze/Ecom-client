@@ -7,7 +7,7 @@ const initialState = {
   error: null,
 };
 
-const API = "http://localhost:5000/api/admin/products";
+const API = `${import.meta.env.VITE_API_URL}/api/admin/products`;
 
 // ➕ Add product
 export const addNewProduct = createAsyncThunk(

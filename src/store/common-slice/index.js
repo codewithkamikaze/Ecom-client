@@ -6,16 +6,16 @@ const initialState = {
   featureImageList: [],
 };
 
+// 🌍 Base API from .env
+const API = `${import.meta.env.VITE_API_URL}/api/common/feature`;
+
 //////////////////////////////
 // GET FEATURE IMAGES
 //////////////////////////////
 export const getFeatureImages = createAsyncThunk(
   "/common/getFeatureImages",
   async () => {
-    const response = await axios.get(
-      "http://localhost:5000/api/common/feature/get",
-    );
-
+    const response = await axios.get(`${API}/get`);
     return response.data;
   },
 );
@@ -26,25 +26,18 @@ export const getFeatureImages = createAsyncThunk(
 export const addFeatureImage = createAsyncThunk(
   "/common/addFeatureImage",
   async (image) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/common/feature/add",
-      { image },
-    );
-
+    const response = await axios.post(`${API}/add`, { image });
     return response.data;
   },
 );
 
 //////////////////////////////
-// DELETE FEATURE IMAGE (NEW)
+// DELETE FEATURE IMAGE
 //////////////////////////////
 export const deleteFeatureImage = createAsyncThunk(
   "/common/deleteFeatureImage",
   async (id) => {
-    const response = await axios.delete(
-      `http://localhost:5000/api/common/feature/delete/${id}`,
-    );
-
+    const response = await axios.delete(`${API}/delete/${id}`);
     return response.data;
   },
 );
@@ -56,9 +49,7 @@ const commonSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      //////////////////////
       // GET IMAGES
-      //////////////////////
       .addCase(getFeatureImages.pending, (state) => {
         state.isLoading = true;
       })
@@ -71,9 +62,7 @@ const commonSlice = createSlice({
         state.featureImageList = [];
       })
 
-      //////////////////////
       // ADD IMAGE
-      //////////////////////
       .addCase(addFeatureImage.pending, (state) => {
         state.isLoading = true;
       })
@@ -84,9 +73,7 @@ const commonSlice = createSlice({
         state.isLoading = false;
       })
 
-      //////////////////////
-      // DELETE IMAGE (NEW)
-      //////////////////////
+      // DELETE IMAGE
       .addCase(deleteFeatureImage.pending, (state) => {
         state.isLoading = true;
       })

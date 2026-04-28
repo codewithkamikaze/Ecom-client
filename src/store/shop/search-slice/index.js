@@ -7,13 +7,17 @@ const initialState = {
   error: null,
 };
 
+// 🌍 Base API من .env
+const API = `${import.meta.env.VITE_API_URL}/api/shop/search`;
+
+//////////////////////////////
+// SEARCH PRODUCTS
+//////////////////////////////
 export const getSearchResults = createAsyncThunk(
   "search/getSearchResults",
   async (keyword, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/shop/search/${keyword}`,
-      );
+      const response = await axios.get(`${API}/${keyword}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -32,6 +36,7 @@ const searchSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       .addCase(getSearchResults.pending, (state) => {
         state.isLoading = true;
         state.error = null;

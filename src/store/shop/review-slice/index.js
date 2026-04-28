@@ -6,15 +6,17 @@ const initialState = {
   reviews: [],
 };
 
-// إضافة تقييم
+// 🌍 Base API من .env
+const API = `${import.meta.env.VITE_API_URL}/api/shop/review`;
+
+//////////////////////////////
+// ADD REVIEW
+//////////////////////////////
 export const addReview = createAsyncThunk(
   "review/addReview",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/shop/review/add",
-        formData,
-      );
+      const response = await axios.post(`${API}/add`, formData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -22,14 +24,14 @@ export const addReview = createAsyncThunk(
   },
 );
 
-// جلب التقييمات
+//////////////////////////////
+// GET REVIEWS
+//////////////////////////////
 export const getReviews = createAsyncThunk(
   "review/getReviews",
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/shop/review/${productId}`,
-      );
+      const response = await axios.get(`${API}/${productId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -48,6 +50,7 @@ const reviewSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       // GET REVIEWS
       .addCase(getReviews.pending, (state) => {
         state.isLoading = true;

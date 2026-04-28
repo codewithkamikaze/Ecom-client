@@ -8,8 +8,7 @@ const initialState = {
   error: null,
 };
 
-const API = "http://localhost:5000/api/auth";
-
+const API = `${import.meta.env.VITE_API_URL}/api/auth`;
 // 🟢 REGISTER
 export const registerUser = createAsyncThunk(
   "auth/register",

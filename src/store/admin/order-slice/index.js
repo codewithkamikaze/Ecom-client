@@ -8,8 +8,7 @@ const initialState = {
   error: null,
 };
 
-const API = "http://localhost:5000/api/admin/orders";
-
+const API = `${import.meta.env.VITE_API_URL}/api/admin/orders`;
 // 📦 Get all orders
 export const getAllOrdersForAdmin = createAsyncThunk(
   "order/getAllOrdersForAdmin",

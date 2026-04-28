@@ -7,15 +7,18 @@ const initialState = {
   productDetails: null,
 };
 
+// 🌍 Base API من .env
+const API = `${import.meta.env.VITE_API_URL}/api/shop/products`;
+
+//////////////////////////////
 // GET FILTERED PRODUCTS
+//////////////////////////////
 export const fetchAllFilteredProducts = createAsyncThunk(
   "/products/fetchAllProducts",
   async ({ filterParams, sortParams }) => {
-    console.log(filterParams, sortParams);
-
     const queryParams = new URLSearchParams();
 
-    // handle filters properly (arrays safe)
+    // filters
     if (filterParams) {
       Object.keys(filterParams).forEach((key) => {
         const value = filterParams[key];
@@ -32,22 +35,19 @@ export const fetchAllFilteredProducts = createAsyncThunk(
       queryParams.append("sortBy", sortParams);
     }
 
-    const result = await axios.get(
-      `http://localhost:5000/api/shop/products/get?${queryParams}`,
-    );
+    const result = await axios.get(`${API}/get?${queryParams}`);
 
     return result?.data;
   },
 );
 
+//////////////////////////////
 // GET PRODUCT DETAILS
+//////////////////////////////
 export const fetchProductDetails = createAsyncThunk(
   "/products/fetchProductDetails",
   async (id) => {
-    const result = await axios.get(
-      `http://localhost:5000/api/shop/products/get/${id}`,
-    );
-
+    const result = await axios.get(`${API}/get/${id}`);
     return result?.data;
   },
 );
@@ -62,6 +62,7 @@ const shoppingProductSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       // LIST
       .addCase(fetchAllFilteredProducts.pending, (state) => {
         state.isLoading = true;
