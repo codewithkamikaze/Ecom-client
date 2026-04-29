@@ -11,7 +11,6 @@ import {
   updateOrderStatus,
 } from "@/store/admin/order-slice";
 import { useToast } from "../ui/use-toast";
-import PropTypes from "prop-types";
 
 const initialFormData = {
   status: "",
@@ -23,6 +22,7 @@ function AdminOrderDetailsView({ orderDetails }) {
   const dispatch = useDispatch();
   const { toast } = useToast();
 
+  // Handle order status update
   function handleUpdateStatus(event) {
     event.preventDefault();
     const { status } = formData;
@@ -31,6 +31,7 @@ function AdminOrderDetailsView({ orderDetails }) {
       updateOrderStatus({ id: orderDetails?._id, orderStatus: status }),
     ).then((data) => {
       if (data?.payload?.success) {
+        // Refresh data after successful update
         dispatch(getOrderDetailsForAdmin(orderDetails?._id));
         dispatch(getAllOrdersForAdmin());
         setFormData(initialFormData);
@@ -42,44 +43,50 @@ function AdminOrderDetailsView({ orderDetails }) {
   }
 
   return (
-    <DialogContent className="sm:max-w-[600px]">
+    <DialogContent className="sm:max-w-[600px] rounded-2xl">
       <div className="grid gap-6">
+        {/* Order Metadata Section */}
         <div className="grid gap-2">
           <div className="flex mt-6 items-center justify-between">
-            <p className="font-medium">Order ID</p>
-            <Label>{orderDetails?._id}</Label>
+            <p className="font-semibold text-gray-600">Order ID</p>
+            <Label className="font-mono text-blue-600">
+              {orderDetails?._id}
+            </Label>
           </div>
 
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Date</p>
+            <p className="font-semibold text-gray-600">Order Date</p>
             <Label>{orderDetails?.orderDate?.split("T")[0]}</Label>
           </div>
 
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Price</p>
-            <Label>${orderDetails?.totalAmount}</Label>
+            <p className="font-semibold text-gray-600">Order Price</p>
+            <Label className="text-green-600 font-bold">
+              ${orderDetails?.totalAmount}
+            </Label>
           </div>
 
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment method</p>
+            <p className="font-semibold text-gray-600">Payment method</p>
             <Label>{orderDetails?.paymentMethod}</Label>
           </div>
 
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment Status</p>
-            <Label>{orderDetails?.paymentStatus}</Label>
+            <p className="font-semibold text-gray-600">Payment Status</p>
+            <Label className="capitalize">{orderDetails?.paymentStatus}</Label>
           </div>
 
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Status</p>
+            <p className="font-semibold text-gray-600">Order Status</p>
             <Label>
               <Badge
-                className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
+                className={`py-1 px-3 rounded-full font-bold shadow-sm ${
+                  orderDetails?.orderStatus === "confirmed" ||
+                  orderDetails?.orderStatus === "delivered"
+                    ? "bg-green-100 text-green-700 hover:bg-green-100"
                     : orderDetails?.orderStatus === "rejected"
-                      ? "bg-red-600"
-                      : "bg-black"
+                      ? "bg-red-100 text-red-700 hover:bg-red-100"
+                      : "bg-blue-100 text-blue-700 hover:bg-blue-100"
                 }`}
               >
                 {orderDetails?.orderStatus}
@@ -90,86 +97,75 @@ function AdminOrderDetailsView({ orderDetails }) {
 
         <Separator />
 
+        {/* Purchased Items List */}
         <div className="grid gap-4">
-          <div className="font-medium">Order Details</div>
-
+          <div className="font-bold text-gray-800">Purchased Items</div>
           <ul className="grid gap-3">
             {orderDetails?.cartItems?.length > 0 &&
               orderDetails.cartItems.map((item, index) => (
                 <li
-                  key={item._id || index} // ✅ حل مشكلة key
-                  className="flex items-center justify-between"
+                  key={item._id || index}
+                  className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100"
                 >
-                  <span>Title: {item.title}</span>
-                  <span>Quantity: {item.quantity}</span>
-                  <span>Price: ${item.price}</span>
+                  <span className="font-medium text-gray-700">
+                    {item.title}
+                  </span>
+                  <div className="flex gap-4 text-sm text-gray-500">
+                    <span>Qty: {item.quantity}</span>
+                    <span className="font-semibold text-gray-700">
+                      ${item.price}
+                    </span>
+                  </div>
                 </li>
               ))}
           </ul>
         </div>
 
-        <div className="grid gap-4">
-          <div className="font-medium">Shipping Info</div>
-
-          <div className="grid gap-0.5 text-muted-foreground">
-            <span>{user?.userName}</span>
+        {/* Shipping and Contact Information */}
+        <div className="grid gap-4 bg-gray-50/50 p-4 rounded-xl border border-dashed border-gray-200">
+          <div className="font-bold text-gray-800">Shipping Info</div>
+          <div className="grid gap-1 text-sm text-gray-600">
+            <span className="font-bold text-gray-900">{user?.userName}</span>
             <span>{orderDetails?.addressInfo?.address}</span>
-            <span>{orderDetails?.addressInfo?.city}</span>
-            <span>{orderDetails?.addressInfo?.pincode}</span>
-            <span>{orderDetails?.addressInfo?.phone}</span>
-            <span>{orderDetails?.addressInfo?.notes}</span>
+            <span>
+              {orderDetails?.addressInfo?.city},{" "}
+              {orderDetails?.addressInfo?.pincode}
+            </span>
+            <span>Phone: {orderDetails?.addressInfo?.phone}</span>
+            {orderDetails?.addressInfo?.notes && (
+              <span className="mt-2 text-xs italic">
+                Note: {orderDetails?.addressInfo?.notes}
+              </span>
+            )}
           </div>
         </div>
 
-        <CommonForm
-          formControls={[
-            {
-              label: "Order Status",
-              name: "status",
-              componentType: "select",
-              options: [
-                { id: "pending", label: "Pending" },
-                { id: "inProcess", label: "In Process" },
-                { id: "inShipping", label: "In Shipping" },
-                { id: "delivered", label: "Delivered" },
-                { id: "rejected", label: "Rejected" },
-              ],
-            },
-          ]}
-          formData={formData}
-          setFormData={setFormData}
-          buttonText={"Update Order Status"}
-          onSubmit={handleUpdateStatus}
-        />
+        {/* Status Update Form */}
+        <div className="mt-2 pt-4 border-t">
+          <CommonForm
+            formControls={[
+              {
+                label: "Update Process Status",
+                name: "status",
+                componentType: "select",
+                options: [
+                  { id: "pending", label: "Pending" },
+                  { id: "inProcess", label: "In Process" },
+                  { id: "inShipping", label: "In Shipping" },
+                  { id: "delivered", label: "Delivered" },
+                  { id: "rejected", label: "Rejected" },
+                ],
+              },
+            ]}
+            formData={formData}
+            setFormData={setFormData}
+            buttonText={"Update Order Status"}
+            onSubmit={handleUpdateStatus}
+          />
+        </div>
       </div>
     </DialogContent>
   );
 }
-
-AdminOrderDetailsView.propTypes = {
-  orderDetails: PropTypes.shape({
-    _id: PropTypes.string,
-    orderDate: PropTypes.string,
-    totalAmount: PropTypes.number,
-    paymentMethod: PropTypes.string,
-    paymentStatus: PropTypes.string,
-    orderStatus: PropTypes.string,
-    cartItems: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string,
-        title: PropTypes.string,
-        quantity: PropTypes.number,
-        price: PropTypes.number,
-      }),
-    ),
-    addressInfo: PropTypes.shape({
-      address: PropTypes.string,
-      city: PropTypes.string,
-      pincode: PropTypes.string,
-      phone: PropTypes.string,
-      notes: PropTypes.string,
-    }),
-  }),
-};
 
 export default AdminOrderDetailsView;

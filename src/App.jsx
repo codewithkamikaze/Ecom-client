@@ -5,13 +5,11 @@ import { useEffect } from "react";
 import AuthLayout from "./components/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
-
 import AdminLayout from "./components/admin-view/layout";
 import AdminDashboard from "./pages/admin-view/dashboard";
 import AdminProducts from "./pages/admin-view/products";
 import AdminOrders from "./pages/admin-view/orders";
 import AdminFeatures from "./pages/admin-view/features";
-
 import ShoppingLayout from "./components/shopping-view/layout";
 import ShoppingHome from "./pages/shopping-view/home";
 import ShoppingListing from "./pages/shopping-view/listing";
@@ -20,12 +18,9 @@ import ShoppingAccount from "./pages/shopping-view/account";
 import SearchProducts from "./pages/shopping-view/search";
 import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
-
 import NotFound from "./pages/not-found";
 import UnauthPage from "./pages/unauth-page";
-
 import CheckAuth from "./components/common/check-auth";
-
 import { checkAuth } from "./store/auth-slice";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -33,7 +28,6 @@ function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
     (state) => state.auth,
   );
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,16 +35,24 @@ function App() {
   }, [dispatch]);
 
   if (isLoading) {
-    return <Skeleton className="w-[800px] h-[600px]" />;
+    return (
+      <div className="flex items-center justify-center min-h-screen w-full bg-white px-6">
+        <div className="flex flex-col space-y-4 w-full max-w-[1200px]">
+          <Skeleton className="h-[60px] w-full rounded-2xl" />
+          <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6">
+            <Skeleton className="h-[600px] rounded-[2.5rem]" />
+            <Skeleton className="h-[600px] rounded-[2.5rem]" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col overflow-hidden bg-white min-h-screen antialiased">
       <Routes>
-        {/* 🔥 ROOT REDIRECT (FIXED) */}
         <Route path="/" element={<Navigate to="/shop/home" />} />
 
-        {/* AUTH */}
         <Route
           path="/auth"
           element={
@@ -63,7 +65,6 @@ function App() {
           <Route path="register" element={<AuthRegister />} />
         </Route>
 
-        {/* ADMIN */}
         <Route
           path="/admin"
           element={
@@ -78,7 +79,6 @@ function App() {
           <Route path="features" element={<AdminFeatures />} />
         </Route>
 
-        {/* SHOP */}
         <Route
           path="/shop"
           element={
@@ -96,7 +96,6 @@ function App() {
           <Route path="payment-success" element={<PaymentSuccessPage />} />
         </Route>
 
-        {/* ERROR PAGES */}
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

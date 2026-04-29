@@ -5,6 +5,7 @@ import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { User } from "lucide-react";
 
 const initialState = {
   email: "",
@@ -22,11 +23,14 @@ function AuthLogin() {
     dispatch(loginUser(formData)).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: data?.payload?.message,
+          title: "Welcome Back!",
+          description: "Logged in successfully",
+          variant: "success",
         });
       } else {
         toast({
-          title: data?.payload?.message,
+          title: "Login Failed",
+          description: data?.payload?.message || "Invalid email or password",
           variant: "destructive",
         });
       }
@@ -34,28 +38,43 @@ function AuthLogin() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
+    <div className="mx-auto w-full max-w-md space-y-8 bg-white p-8 sm:p-10 rounded-[2.5rem] shadow-xl shadow-gray-100/50 border border-gray-50">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Sign in to your account
+        {/* Visual Anchor */}
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-blue-50 mb-6">
+          <User className="w-8 h-8 text-blue-600" />
+        </div>
+
+        <h1 className="text-4xl font-black tracking-tight text-gray-900">
+          Sign In
         </h1>
-        <p className="mt-2">
-          Don&apos;t have an account?
+
+        <p className="mt-3 text-gray-500 font-medium">
+          New customer?
           <Link
-            className="font-medium ml-2 text-primary hover:underline"
+            className="font-bold ml-2 text-blue-600 hover:text-blue-700 transition-colors underline-offset-4 hover:underline"
             to="/auth/register"
           >
-            Register
+            Create an account
           </Link>
         </p>
       </div>
-      <CommonForm
-        formControls={loginFormControls}
-        buttonText={"Sign In"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
+
+      <div className="mt-8">
+        <CommonForm
+          formControls={loginFormControls}
+          buttonText={"Sign In"}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={onSubmit}
+        />
+      </div>
+
+      <div className="text-center mt-6">
+        <p className="text-xs text-gray-400 font-medium">
+          Your data is encrypted and secure.
+        </p>
+      </div>
     </div>
   );
 }

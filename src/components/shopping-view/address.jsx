@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import CommonForm from "../common/form";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -30,13 +29,16 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   const { addressList } = useSelector((state) => state.shopAddress);
   const { toast } = useToast();
 
+  // Logic to add or update an address
   function handleManageAddress(event) {
     event.preventDefault();
 
+    // Limit users to a maximum of 3 addresses
     if (addressList?.length >= 3 && currentEditedId === null) {
       setFormData(initialAddressFormData);
       toast({
-        title: "You can add max 3 addresses",
+        title: "Address limit reached",
+        description: "You can add a maximum of 3 addresses.",
         variant: "destructive",
       });
       return;
@@ -44,7 +46,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
 
     if (currentEditedId !== null) {
       dispatch(
-        editaAddress({
+        editAddress({
           userId: user?.id,
           addressId: currentEditedId,
           formData,
@@ -73,6 +75,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     }
   }
 
+  // Handle address deletion
   function handleDeleteAddress(getCurrentAddress) {
     dispatch(
       deleteAddress({
@@ -87,9 +90,9 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     });
   }
 
+  // Populate form for editing
   function handleEditAddress(currentAddress) {
     setCurrentEditedId(currentAddress?._id);
-
     setFormData({
       address: currentAddress?.address || "",
       city: currentAddress?.city || "",
@@ -99,6 +102,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     });
   }
 
+  // Basic form validation
   function isFormValid() {
     return Object.values(formData).every(
       (val) => typeof val === "string" && val.trim() !== "",
@@ -112,46 +116,52 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   }, [dispatch, user?.id]);
 
   return (
-    <Card>
-      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {addressList?.map((singleAddressItem) => (
-          <AddressCard
-            key={singleAddressItem._id}
-            selectedId={selectedId}
-            handleDeleteAddress={handleDeleteAddress}
-            addressInfo={singleAddressItem}
-            handleEditAddress={handleEditAddress}
-            setCurrentSelectedAddress={setCurrentSelectedAddress}
-          />
-        ))}
+    <Card className="border-none shadow-none bg-transparent">
+      {/* Address List Grid */}
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {addressList && addressList.length > 0 ? (
+          addressList.map((singleAddressItem) => (
+            <AddressCard
+              key={singleAddressItem._id}
+              selectedId={selectedId}
+              handleDeleteAddress={handleDeleteAddress}
+              addressInfo={singleAddressItem}
+              handleEditAddress={handleEditAddress}
+              setCurrentSelectedAddress={setCurrentSelectedAddress}
+            />
+          ))
+        ) : (
+          <p className="text-gray-500 text-sm italic col-span-full text-center py-4">
+            No addresses found. Please add one below.
+          </p>
+        )}
       </div>
 
-      <CardHeader>
-        <CardTitle>
-          {currentEditedId !== null ? "Edit Address" : "Add New Address"}
-        </CardTitle>
-      </CardHeader>
+      {/* Add/Edit Form Section */}
+      <Card className="rounded-2xl border-gray-100 shadow-sm overflow-hidden">
+        <CardHeader className="bg-gray-50/50 border-b">
+          <CardTitle className="text-lg font-bold text-gray-800">
+            {currentEditedId !== null
+              ? "Update Address"
+              : "Add New Shipping Address"}
+          </CardTitle>
+        </CardHeader>
 
-      <CardContent className="space-y-3">
-        <CommonForm
-          formControls={addressFormControls}
-          formData={formData}
-          setFormData={setFormData}
-          buttonText={currentEditedId !== null ? "Edit" : "Add"}
-          onSubmit={handleManageAddress}
-          isBtnDisabled={!isFormValid()}
-        />
-      </CardContent>
+        <CardContent className="p-6">
+          <CommonForm
+            formControls={addressFormControls}
+            formData={formData}
+            setFormData={setFormData}
+            buttonText={
+              currentEditedId !== null ? "Update Address" : "Save Address"
+            }
+            onSubmit={handleManageAddress}
+            isBtnDisabled={!isFormValid()}
+          />
+        </CardContent>
+      </Card>
     </Card>
   );
 }
-
-/* ✅ PropTypes */
-Address.propTypes = {
-  setCurrentSelectedAddress: PropTypes.func,
-  selectedId: PropTypes.shape({
-    _id: PropTypes.string,
-  }),
-};
 
 export default Address;

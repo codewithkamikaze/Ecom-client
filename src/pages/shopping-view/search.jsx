@@ -8,6 +8,7 @@ import {
   getSearchResults,
   resetSearchResults,
 } from "@/store/shop/search-slice";
+import { Search, SearchX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
@@ -25,7 +26,6 @@ function SearchProducts() {
 
   const { toast } = useToast();
 
-  // ✅ debounce search
   useEffect(() => {
     const trimmed = keyword.trim();
 
@@ -34,7 +34,7 @@ function SearchProducts() {
         setSearchParams({ keyword: trimmed });
         dispatch(getSearchResults(trimmed));
       } else {
-        setSearchParams({ keyword: trimmed });
+        setSearchParams({});
         dispatch(resetSearchResults());
       }
     }, 600);
@@ -44,12 +44,12 @@ function SearchProducts() {
 
   function handleAddtoCart(productId, totalStock) {
     const items = cartItems?.items || [];
-
     const existing = items.find((i) => i.productId === productId);
 
     if (existing && existing.quantity + 1 > totalStock) {
       toast({
-        title: `Only ${existing.quantity} quantity can be added`,
+        title: "Limit reached",
+        description: `Only ${totalStock} units available.`,
         variant: "destructive",
       });
       return;
@@ -64,7 +64,10 @@ function SearchProducts() {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
-        toast({ title: "Product is added to cart" });
+        toast({
+          title: "Added to cart",
+          variant: "success",
+        });
       }
     });
   }
@@ -80,21 +83,42 @@ function SearchProducts() {
   }, [productDetails]);
 
   return (
-    <div className="container mx-auto md:px-6 px-4 py-8">
-      <div className="flex justify-center mb-8">
-        <Input
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          className="py-6"
-          placeholder="Search Products..."
-        />
+    <div className="container mx-auto min-h-screen md:px-6 px-4 py-12">
+      {/* Search Bar Section */}
+      <div className="flex flex-col items-center mb-12 space-y-4">
+        <h1 className="text-4xl font-black text-gray-900 tracking-tight">
+          Find Tools
+        </h1>
+        <p className="text-gray-500 font-medium">
+          Search across our professional inventory
+        </p>
+
+        <div className="relative w-full max-w-2xl mt-4">
+          <Input
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            className="w-full py-8 pl-14 pr-6 text-lg rounded-[2rem] border-none shadow-2xl shadow-blue-100/50 focus-visible:ring-2 focus-visible:ring-blue-500 transition-all"
+            placeholder="Type tool name, category or brand..."
+          />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-blue-500" />
+        </div>
       </div>
 
-      {!searchResults?.length ? (
-        <h1 className="text-3xl font-bold text-center">No result found!</h1>
+      {/* Results Section */}
+      {!searchResults?.length && keyword.trim().length > 3 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="bg-gray-50 p-6 rounded-full mb-4">
+            <SearchX className="w-12 h-12 text-gray-300" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">No results found</h2>
+          <p className="text-gray-500 max-w-xs mx-auto">
+            We couldn't find anything matching "{keyword}". Check your spelling
+            or try another term.
+          </p>
+        </div>
       ) : null}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {searchResults.map((item) => (
           <ShoppingProductTile
             key={item._id}

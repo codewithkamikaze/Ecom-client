@@ -1,10 +1,13 @@
-import PropTypes from "prop-types";
-import { Minus, Plus, Trash } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react"; // Using Trash2 for a more modern look
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteCartItem, updateCartQuantity } from "@/store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
 
+/**
+ * UserCartItemsContent Component
+ * Renders an individual cart item row with quantity controls and stock validation.
+ */
 function UserCartItemsContent({ cartItem }) {
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -13,6 +16,7 @@ function UserCartItemsContent({ cartItem }) {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { productList } = useSelector((state) => state.shopProducts);
 
+  // Logic to increase/decrease quantity with stock check
   function handleUpdateQuantity(getCartItem, typeOfAction) {
     const getCartItems = cartItems?.items || [];
 
@@ -26,15 +30,15 @@ function UserCartItemsContent({ cartItem }) {
       );
 
       const currentProduct = productList?.[getCurrentProductIndex];
-
       const getTotalStock = currentProduct?.totalStock || 0;
 
+      // Prevent adding more than available stock
       if (indexOfCurrentCartItem > -1) {
         const getQuantity = getCartItems[indexOfCurrentCartItem]?.quantity || 0;
 
         if (getQuantity + 1 > getTotalStock) {
           toast({
-            title: `Only ${getTotalStock} quantity can be added for this item`,
+            title: `Only ${getTotalStock} items are in stock`,
             variant: "destructive",
           });
           return;
@@ -54,12 +58,13 @@ function UserCartItemsContent({ cartItem }) {
     ).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: "Cart item updated successfully",
+          title: "Cart updated",
         });
       }
     });
   }
 
+  // Handle removing an item completely from the cart
   function handleCartItemDelete(getCartItem) {
     dispatch(
       deleteCartItem({
@@ -69,76 +74,79 @@ function UserCartItemsContent({ cartItem }) {
     ).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: "Cart item deleted successfully",
+          title: "Item removed from cart",
         });
       }
     });
   }
 
-  const price =
+  // Calculate dynamic price based on sale or regular price
+  const displayPrice =
     (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
     cartItem?.quantity;
 
   return (
-    <div className="flex items-center space-x-4">
-      <img
-        src={cartItem?.image}
-        alt={cartItem?.title}
-        className="w-20 h-20 rounded object-contain"
-      />
+    <div className="flex items-center gap-4 py-4 border-b last:border-0 border-gray-100">
+      {/* Product Image Container */}
+      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50 border border-gray-100">
+        <img
+          src={cartItem?.image}
+          alt={cartItem?.title}
+          className="h-full w-full object-contain p-2"
+        />
+      </div>
 
-      <div className="flex-1">
-        <h3 className="font-extrabold">{cartItem?.title}</h3>
+      {/* Item Details and Controls */}
+      <div className="flex flex-1 flex-col gap-1">
+        <h3 className="text-sm font-bold text-gray-800 line-clamp-1">
+          {cartItem?.title}
+        </h3>
 
-        <div className="flex items-center gap-2 mt-1">
-          <Button
-            variant="outline"
-            className="h-8 w-8 rounded-full"
-            size="icon"
-            disabled={cartItem?.quantity === 1}
-            onClick={() => handleUpdateQuantity(cartItem, "minus")}
-            type="button"
-          >
-            <Minus className="w-4 h-4" />
-          </Button>
+        <div className="flex items-center gap-3 mt-2">
+          <div className="flex items-center border border-gray-200 rounded-lg p-0.5 shadow-sm">
+            <Button
+              variant="ghost"
+              className="h-7 w-7 rounded-md p-0 hover:bg-gray-100"
+              size="icon"
+              disabled={cartItem?.quantity === 1}
+              onClick={() => handleUpdateQuantity(cartItem, "minus")}
+            >
+              <Minus className="h-3 w-3" />
+            </Button>
 
-          <span className="font-semibold">{cartItem?.quantity}</span>
+            <span className="w-8 text-center text-sm font-bold text-gray-900">
+              {cartItem?.quantity}
+            </span>
 
-          <Button
-            variant="outline"
-            className="h-8 w-8 rounded-full"
-            size="icon"
-            onClick={() => handleUpdateQuantity(cartItem, "plus")}
-            type="button"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
+            <Button
+              variant="ghost"
+              className="h-7 w-7 rounded-md p-0 hover:bg-gray-100"
+              size="icon"
+              onClick={() => handleUpdateQuantity(cartItem, "plus")}
+            >
+              <Plus className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col items-end">
-        <p className="font-semibold">${price.toFixed(2)}</p>
+      {/* Price and Delete Action */}
+      <div className="flex flex-col items-end gap-3">
+        <p className="text-sm font-black text-blue-600">
+          ${displayPrice.toFixed(2)}
+        </p>
 
-        <Trash
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
           onClick={() => handleCartItemDelete(cartItem)}
-          className="cursor-pointer mt-1"
-          size={20}
-        />
+        >
+          <Trash2 size={16} />
+        </Button>
       </div>
     </div>
   );
 }
-
-/* ✅ PropTypes */
-UserCartItemsContent.propTypes = {
-  cartItem: PropTypes.shape({
-    productId: PropTypes.string,
-    image: PropTypes.string,
-    title: PropTypes.string,
-    price: PropTypes.number,
-    salePrice: PropTypes.number,
-    quantity: PropTypes.number,
-  }).isRequired,
-};
 
 export default UserCartItemsContent;

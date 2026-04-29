@@ -6,7 +6,6 @@ const initialState = {
   addressList: [],
 };
 
-// 🌍 Base API من .env
 const API = `${import.meta.env.VITE_API_URL}/api/shop/address`;
 
 //////////////////////////////
