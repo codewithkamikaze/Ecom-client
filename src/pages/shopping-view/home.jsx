@@ -121,7 +121,7 @@ function ShoppingHome() {
             key={slide?._id || index}
             src={slide?.image}
             alt="Feature"
-            className={`absolute top-0 left-0 w-full h-full object-cover transition-all duration-1000 ease-in-out ${
+            className={`absolute top-0 left-0 w-full h-full object-fill transition-all duration-1000 ease-in-out ${
               index === currentSlide
                 ? "opacity-100 scale-100"
                 : "opacity-0 scale-105"
