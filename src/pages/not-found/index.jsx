@@ -26,6 +26,7 @@ function NotFound() {
 
       <Link
         to="/"
+        replace={true}
         className="mt-10 flex items-center gap-2 px-8 py-4 bg-gray-900 text-white hover:bg-blue-600 transition-all duration-300 rounded-[1.5rem] font-bold shadow-2xl shadow-gray-200 group"
       >
         <MoveLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />

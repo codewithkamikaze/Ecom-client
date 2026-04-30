@@ -140,7 +140,7 @@ function ShoppingHome() {
                   featureImageList.length,
               )
             }
-            className="rounded-full bg-white/20 backdrop-blur-md hover:bg-white/50 text-white"
+            className="rounded-full bg-white/20 backdrop-blur-md hover:bg-white/40 text-white border border-white/30 transition-all duration-300 shadow-sm"
           >
             <ChevronLeftIcon className="w-6 h-6" />
           </Button>

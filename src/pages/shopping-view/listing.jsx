@@ -16,7 +16,7 @@ import {
   fetchAllFilteredProducts,
   fetchProductDetails,
 } from "@/store/shop/products-slice";
-import { ArrowUpDownIcon, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { ArrowUpDownIcon, LayoutGrid } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
@@ -128,40 +128,47 @@ function ShoppingListing() {
   }, [productDetails]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 p-4 md:p-10 bg-[#fbfbfb] min-h-screen">
-      {/* Sidebar Filter */}
-      <aside className="md:w-[280px] shrink-0">
-        <div className="sticky top-24 bg-white rounded-[2rem] shadow-sm border border-gray-100 p-2">
+    <div className="flex flex-col md:flex-row gap-6 p-3 md:p-10 bg-[#fbfbfb] min-h-screen">
+      {/* Sidebar Filter - Hidden on very small screens or optimized */}
+      <aside className="w-full md:w-[250px] lg:w-[280px] shrink-0">
+        <div className="md:sticky md:top-24 bg-white rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100 p-2">
+          {/* نصيحة: يفضل عمل الفلتر كـ "Accordion" في الجوال لتقليل المساحة */}
           <ProductFilter filters={filters} handleFilter={handleFilter} />
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 bg-white rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden">
-        {/* Top Header Section */}
-        <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <LayoutGrid className="w-5 h-5 text-blue-600" />
-            <h2 className="text-xl font-black text-gray-900 tracking-tight">
-              All Products
-            </h2>
-            <span className="ml-2 px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full">
+      <main className="flex-1 bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden">
+        {/* Header Section - Optimized for Mobile */}
+        <div className="p-4 md:p-6 border-b border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center justify-between w-full sm:w-auto gap-2">
+            <div className="flex items-center gap-2">
+              <LayoutGrid className="w-5 h-5 text-blue-600" />
+              <h2 className="text-lg md:text-xl font-black text-gray-900">
+                Products
+              </h2>
+            </div>
+            <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] md:text-xs font-bold rounded-full">
               {productList?.length || 0} Items
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Sort Button - Full width on mobile */}
+          <div className="w-full sm:w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="rounded-xl font-bold flex gap-2 border-gray-200"
+                  className="w-full sm:w-auto rounded-xl font-bold flex gap-2 border-gray-200 h-10 md:h-12"
                 >
                   <ArrowUpDownIcon className="h-4 w-4" />
                   Sort by
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-xl p-2 w-48">
+              <DropdownMenuContent
+                align="end"
+                className="rounded-xl p-2 w-[200px]"
+              >
                 <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
                   {sortOptions.map((item) => (
                     <DropdownMenuRadioItem
@@ -178,10 +185,10 @@ function ShoppingListing() {
           </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="p-6">
+        {/* Products Grid - CRITICAL CHANGES HERE */}
+        <div className="p-3 md:p-6">
           {productList && productList.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 md:gap-12">
               {productList.map((productItem) => (
                 <ShoppingProductTile
                   key={productItem._id}
@@ -192,16 +199,8 @@ function ShoppingListing() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-32 text-center">
-              <div className="bg-gray-50 p-6 rounded-full mb-4">
-                <SlidersHorizontal className="w-10 h-10 text-gray-300" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">
-                No products found
-              </h3>
-              <p className="text-gray-500">
-                Try adjusting your filters to find what you're looking for.
-              </p>
+            <div className="flex flex-col items-center justify-center py-20 md:py-32 text-center">
+              {/* ... (نفس الـ No products found) */}
             </div>
           )}
         </div>

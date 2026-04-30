@@ -16,8 +16,8 @@ function AuthLayout() {
         <div className="relative z-10 max-w-lg text-center text-white space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl xl:text-6xl font-black tracking-tighter leading-none">
-              SHOPPER <br />
-              <span className="text-blue-500">CONTROL.</span>
+              Welcome To <br />
+              <span className="text-blue-500">Our Ecommerce.</span>
             </h1>
             <p className="text-gray-400 text-lg font-medium">
               The ultimate platform for modern commerce.

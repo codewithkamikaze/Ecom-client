@@ -156,7 +156,7 @@ function ShoppingCheckout() {
                   Grand Total
                 </span>
                 <span className="text-2xl font-black text-blue-600">
-                  ${totalCartAmount}
+                  ${Number(totalCartAmount).toFixed(2)}
                 </span>
               </div>
             </div>
