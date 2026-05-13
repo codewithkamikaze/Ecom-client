@@ -8,8 +8,8 @@ import { Link } from "react-router-dom";
 import { User } from "lucide-react";
 
 const initialState = {
-  email: "",
-  password: "",
+  email: "samer1234@gmail.com",
+  password: "samer112",
 };
 
 function AuthLogin() {
@@ -30,17 +30,26 @@ function AuthLogin() {
       } else {
         toast({
           title: "Login Failed",
-          description: data?.payload?.message || "Invalid email or password",
+          description:
+            data?.payload?.message || "Invalid email or password",
           variant: "destructive",
         });
       }
     });
   }
 
+  function handleDemoLogin() {
+    setFormData({
+      email: "samer1234@gmail.com",
+      password: "samer112",
+    });
+  }
+
   return (
     <div className="mx-auto w-full max-w-md space-y-8 bg-white p-8 sm:p-10 rounded-[2.5rem] shadow-xl shadow-gray-100/50 border border-gray-50">
+      
+      {/* Header */}
       <div className="text-center">
-        {/* Visual Anchor */}
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-blue-50 mb-6">
           <User className="w-8 h-8 text-blue-600" />
         </div>
@@ -60,7 +69,24 @@ function AuthLogin() {
         </p>
       </div>
 
-      <div className="mt-8">
+      {/* Demo Login Button */}
+      <div>
+        <button
+          type="button"
+          onClick={handleDemoLogin}
+          className="w-full rounded-2xl bg-gray-100 p-3 font-semibold text-gray-700 hover:bg-gray-200 transition-all"
+        >
+          Use Demo Account
+        </button>
+
+        <p className="text-sm text-gray-500 text-center mt-3">
+          Demo Account: <span className="font-semibold">samer1234@gmail.com</span> /
+          <span className="font-semibold">samer112</span>
+        </p>
+      </div>
+
+      {/* Login Form */}
+      <div className="mt-4">
         <CommonForm
           formControls={loginFormControls}
           buttonText={"Sign In"}
@@ -70,6 +96,7 @@ function AuthLogin() {
         />
       </div>
 
+      {/* Footer */}
       <div className="text-center mt-6">
         <p className="text-xs text-gray-400 font-medium">
           Your data is encrypted and secure.
